@@ -773,6 +773,7 @@ std::string getWKT(const Collection<T>& coll, uint16_t prec) {
     if (g.getType() == 3) ret += util::geo::getWKT(g.getMultiLine(), prec);
     if (g.getType() == 4) ret += util::geo::getWKT(g.getMultiPolygon(), prec);
     if (g.getType() == 5) ret += util::geo::getWKT(g.getCollection(), prec);
+    if (g.getType() == 6) ret += util::geo::getWKT(g.getMultiPoint(), prec);
   }
 
   return ret + ")";
@@ -4790,13 +4791,13 @@ Collection<T> collectionFromWKTProj(const char* c, const char** endr,
       c = const_cast<char*>(strchr(end, ','));
     } else if (wktType == MULTIPOINT) {
       const char* end = 0;
-      const auto& line = lineFromWKTProj<T, F>(c, &end, projFunc, sourceCRS);
+      const auto& mp = multiPointFromWKTProj<T, F>(c, &end, projFunc, sourceCRS);
 
       if (!end) {
         if (endr) (*endr) = 0;
         return {};
       }
-      if (line.size() > 0) col.push_back(MultiPoint<T>(std::move(line)));
+      if (mp.size()) col.push_back(mp);
       c = const_cast<char*>(strchr(end, ','));
     } else if (wktType == MULTIPOLYGON) {
       const char* end = 0;

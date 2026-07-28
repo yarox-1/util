@@ -485,22 +485,6 @@ RotatedBox<T> shrink(const RotatedBox<T>& b, double d) {
 template <typename T>
 std::string getWKT(const Point<T>& p, uint16_t prec) {
   std::string ret;
-  // TODO: Reattach IRI if CRS of point is not default (CRS84).
-  /*
-  switch (crs)
-  {
-  case 2:
-    ret = "<http://www.opengis.net/def/crs/EPSG/0/4326> POINT(";
-    break;
-  case 3:
-    ret = "<http://www.opengis.net/def/crs/EPSG/0/3857> POINT(";
-    break;
-  
-  default:
-    ret = "POINT(";
-    break;
-  }
-  */
   ret = "POINT(";
   ret.reserve(6 + prec + 3 + prec + 3 + 1);
   ret.append(formatFloat(p.getX(), prec));
@@ -4743,6 +4727,10 @@ MultiPolygon<T> multiPolygonFromWKT(const char* c, const char** endr) {
 template <typename T, typename F>
 Collection<T> collectionFromWKTProj(const char* c, const char** endr,
                                     F&& projFunc) {
+  // If any previous function was called with 'endr = 0' it first needs to be
+  // replaced, such that 'getCRSType' can correctly update 'endr'.
+  const char* replacement = nullptr;
+  endr = (endr != nullptr) ? endr : &replacement;
   CRSType sourceCRS = getCRSType(c, endr);
   return collectionFromWKTProj<T, F>(c, endr, projFunc, sourceCRS);
 }
@@ -4833,7 +4821,7 @@ Collection<T> collectionFromWKTProj(const char* c, const char** endr,
     }
   } while (c && *c);
 
-  if (endr) (*endr) = strchr(c, ')');
+  if (endr) (*endr) = c ? strchr(c, ')') : nullptr;
 
   return col;
 }
@@ -6253,23 +6241,18 @@ Point<T> latLngToLngLat(Point<T> latLng) {
 template <typename T>
 Point<T> projectToCRS(const Point<T>& p, CRSType baseCRS, CRSType goalCRS) {
   if (baseCRS == goalCRS) return p;
-  if (goalCRS == UNSUPPORTED) throw std::runtime_error("Projection to unsupported CRS type.");
   
   switch (goalCRS)
   {
   case CRS84:
     return projectToCRS84(p, baseCRS);
-    break;
   case WGS84:
     return projectToWGS84(p, baseCRS);
-    break;
   case WEB_MERCATOR:
     return projectToWebMerc(p, baseCRS);
-    break;
   default:
-    break;
+    throw std::runtime_error("Projection to unsupported CRS type.");
   }
-  throw std::runtime_error("Projection to unsupported CRS type.");
 }
 
 // _____________________________________________________________________________
@@ -6281,13 +6264,10 @@ Point<T> projectToCRS84(const Point<T>& p, CRSType baseCRS) {
     return p;
   case WGS84:
     return latLngToLngLat(p);
-    break;
   case WEB_MERCATOR:
     return webMercToLatLng(p);
-    break;
   default:
     throw std::runtime_error("The CRS type of the input Point is not supported (yet).");
-    break;
   }
 }
 
@@ -6300,13 +6280,10 @@ Point<T> projectToWGS84(const Point<T>& p, CRSType baseCRS) {
     return lngLatToLatLng(p);
   case WGS84:
     return p;
-    break;
   case WEB_MERCATOR:
     return lngLatToLatLng(webMercToLatLng(p));
-    break;
   default:
     throw std::runtime_error("The CRS type of the input Point is not supported (yet).");
-    break;
   }
 }
 
@@ -6319,13 +6296,10 @@ Point<T> projectToWebMerc(const Point<T>& p, CRSType baseCRS) {
     return latLngToWebMerc(p);
   case WGS84:
     return latLngToWebMerc(latLngToLngLat(p));
-    break;
   case WEB_MERCATOR:
     return p;
-    break;
   default:
     throw std::runtime_error("The CRS type of the input Point is not supported (yet).");
-    break;
   }
 }
 

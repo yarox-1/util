@@ -161,10 +161,6 @@ enum CRSType : uint8_t {
   CRS84 = 1,
   WGS84 = 2,
   WEB_MERCATOR = 3,
-  PLACEHOLDER1 = 4,
-  PLACEHOLDER2 = 5,
-  PLACEHOLDER3 = 6,
-  PLACEHOLDER4 = 7
 };
 
 uint8_t boolArrToInt8(const std::array<bool, 8> arr);

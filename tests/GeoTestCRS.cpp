@@ -1,6 +1,6 @@
 // Copyright 2016, University of Freiburg,
 // Chair of Algorithms and Data Structures.
-// Authors: Patrick Brosi <brosi@informatik.uni-freiburg.de>
+// Authors: Yannik Schnell <yannik.schnell@email.uni-freiburg.de>
 
 #include "util/Test.h"
 #include "util/log/Log.h"
@@ -45,6 +45,10 @@ void GeoTest::testCRS() {
     TEST(util::geo::getWKTType("<http://www.opengis.net/def/crs/EPSG/0/4326> Point MZ (1 1)", 0), ==, WKTType::POINT);
     TEST(util::geo::getWKTType("<http://www.opengis.net/def/crs/EPSG/0/4326> mPoint MZ (1 1)", 0), ==, WKTType::POINT);
     TEST(util::geo::getWKTType("<http://www.opengis.net/def/crs/EPSG/0/4326> oint MZ (1 1)", 0), ==, WKTType::NONE);
+
+    // Invalid IRI.
+    TEST(util::geo::getWKTType("<http://www.opengis.net/def/crs/EPSG/0/4326 Point(1 1)", 0), ==, WKTType::NONE);
+    TEST(util::geo::getWKTType("<http://www.opengis.net/def/crs/EPSG/0/4326>> Point(1 1)", 0), ==, WKTType::NONE);
   }
 
   {
@@ -65,6 +69,9 @@ void GeoTest::testCRS() {
 
     TEST(util::geo::getCRSType("<http://www.opengis.net/def/crs/EPSG/0/28992> LINESTRING(0 0, 1 1)", 0), ==, CRSType::UNSUPPORTED);
     TEST(util::geo::getCRSType("<http://www.opengis.net/def/crs/EPSG/0/28992> MLINESTRING(0 0, 1 1)", 0), ==, CRSType::UNSUPPORTED);
+
+    // Invalid IRI.
+    TEST(util::geo::getCRSType("<http://www.opengis.net/def/crs/EPSG/0/4326 Point(1 1)", 0), ==, CRSType::UNSUPPORTED);
   }
 
   {

@@ -1313,6 +1313,9 @@ template <typename T>
 Line<T> densify(const Line<T>& l, double d);
 
 template <typename T>
+Line<T> sparseify(const Line<T>& l, double mind);
+
+template <typename T>
 double frechetDistC(size_t i, size_t j, const Line<T>& p, const Line<T>& q,
                     std::vector<float>& ca);
 

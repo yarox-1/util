@@ -5918,8 +5918,27 @@ double haversine(const Point<T>& a, const Point<T>& b) {
 
 // _____________________________________________________________________________
 template <typename T>
+Line<T> sparseify(const Line<T>& l, double mind) {
+  if (l.size() < 3) return l;
+
+  Line<T> ret;
+  ret.push_back(l.front());
+
+  for (size_t i = 1; i < l.size() - 1; i++) {
+    double segd = dist(l[i], ret.back());
+    if (segd >= mind) ret.push_back(l[i]);
+  }
+
+  ret.push_back(l.back());
+
+  return ret;
+}
+
+// _____________________________________________________________________________
+template <typename T>
 Line<T> densify(const Line<T>& l, double d) {
   if (!l.size()) return l;
+  if (d <= 0) return l;
 
   // compute number of required points
   size_t exp = l.size();
@@ -6937,7 +6956,7 @@ double meterDistLocalSearchPadding(double euclideanDistanceUpperBound,
 // _____________________________________________________________________________
 template <typename T>
 std::vector<Point<T>> fill(const Polygon<T>& p, double d,
-                                  const Box<T>& bounds) {
+                           const Box<T>& bounds) {
   std::vector<Point<T>> ret;
 
   // y bounds

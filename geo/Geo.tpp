@@ -6015,14 +6015,15 @@ Line<T> sparseify(const Line<T>& l, double mind) {
 
 // _____________________________________________________________________________
 template <typename T>
-Line<T> densify(const Line<T>& l, double d) {
+Line<T> densify(const Line<T>& l, double d, const Box<T>& b) {
   if (!l.size()) return l;
   if (d <= 0) return l;
 
-  // compute number of required points
-  size_t exp = l.size();
+  // compute rough approx number of required points
+  size_t exp = 0;
   for (size_t i = 1; i < l.size(); i++) {
-    exp += dist(l[i - 1], l[i]) / d;
+    if (!b.isNull() && !contains(LineSegment<T>{l[i - 1], l[i]}, b)) continue;
+    exp += 1 + dist(l[i - 1], l[i]) / d;
   }
 
   // shortcut
@@ -6038,8 +6039,9 @@ Line<T> densify(const Line<T>& l, double d) {
     double dy = (l[i].getY() - l[i - 1].getY()) / segd;
     double curd = d;
     while (curd < segd) {
-      ret.push_back(Point<T>(1.0 * l[i - 1].getX() + dx * curd,
-                             1.0 * l[i - 1].getY() + dy * curd));
+      Point<T> point(1.0 * l[i - 1].getX() + dx * curd,
+                             1.0 * l[i - 1].getY() + dy * curd);
+      if (b.isNull() || contains(point, b)) ret.push_back(point);
       curd += d;
     }
 
@@ -6047,6 +6049,12 @@ Line<T> densify(const Line<T>& l, double d) {
   }
 
   return ret;
+}
+
+// _____________________________________________________________________________
+template <typename T>
+Line<T> densify(const Line<T>& l, double d) {
+  return densify(l, d, Box<T>());
 }
 
 // _____________________________________________________________________________

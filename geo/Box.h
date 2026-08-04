@@ -6,6 +6,7 @@
 #define UTIL_GEO_BOX_H_
 
 #include <limits>
+
 #include "./Point.h"
 
 namespace util {
@@ -17,7 +18,8 @@ class Box {
   // maximum inverse box as default value of box
   Box()
       : _ll(std::numeric_limits<T>::max(), std::numeric_limits<T>::max()),
-        _ur(std::numeric_limits<T>::lowest(), std::numeric_limits<T>::lowest()) {}
+        _ur(std::numeric_limits<T>::lowest(),
+            std::numeric_limits<T>::lowest()) {}
   Box(const Point<T>& ll, const Point<T>& ur) : _ll(ll), _ur(ur) {}
   const Point<T>& getLowerLeft() const { return _ll; }
   const Point<T>& getUpperRight() const { return _ur; }
@@ -31,7 +33,7 @@ class Box {
   void setLowerLeft(const Point<T>& ll) { _ll = ll; }
   void setUpperRight(const Point<T>& ur) { _ur = ur; }
 
-  bool isNull() { return _ll.getX() > _ur.getX(); }
+  bool isNull() const { return _ll.getX() > _ur.getX(); }
 
   bool operator==(const Box<T>& b) const {
     return getLowerLeft() == b.getLowerLeft() &&
@@ -119,7 +121,6 @@ double area(const Box<T>& b) {
   return (1.0 * b.getUpperRight().getX() - 1.0 * b.getLowerLeft().getX()) *
          (1.0 * b.getUpperRight().getY() - 1.0 * b.getLowerLeft().getY());
 }
-
 
 }  // namespace geo
 }  // namespace util

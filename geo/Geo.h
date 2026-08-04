@@ -156,6 +156,13 @@ enum WKTType : uint8_t {
   COLLECTION = 7
 };
 
+enum CRSType : uint8_t {
+  UNSUPPORTED = 0,
+  CRS84 = 1,
+  WGS84 = 2,
+  WEB_MERCATOR = 3,
+};
+
 uint8_t boolArrToInt8(const std::array<bool, 8> arr);
 
 template <typename T>
@@ -930,6 +937,11 @@ bool empty(const Collection<T>& g);
 template <typename T, typename F>
 Line<T> lineFromWKTProj(const char* c, const char** endr, F projFunc);
 
+// Overload used internally by other geometry parsers (e.g. 'multiPointFromWKTProj'), which
+// detect their 'CRSType' and pass it down to this function. Otherwise the CRS IRI would be lost.
+template <typename T, typename F>
+Line<T> lineFromWKTProj(const char* c, const char** endr, F projFunc, CRSType sourceCRS);
+
 template <typename T>
 Line<T> lineFromWKT(const char* c, const char** endr);
 
@@ -939,6 +951,12 @@ MultiLine<T> multiLineFromWKT(const char* c, const char** endr);
 template <typename T, typename F>
 MultiPoint<T> multiPointFromWKTProj(const char* c, const char** endr,
                                     F projFunc);
+
+// Overload used internally by other geometry parsers (e.g. 'multiPointFromWKT'), which
+// detect their 'CRSType' and pass it down to this function. Otherwise the CRS IRI would be lost.
+template <typename T, typename F>
+MultiPoint<T> multiPointFromWKTProj(const char* c, const char** endr,
+                                    F projFunc, CRSType sourceCRS);
 
 template <typename T>
 MultiPoint<T> multiPointFromWKT(const char* c, const char** endr);
@@ -952,6 +970,11 @@ MultiPoint<T> multiPointFromWKTProj(const std::string& wkt, F&& projFunc);
 template <typename T, typename F>
 Point<T> pointFromWKTProj(const char* c, const char** endr, F projFunc);
 
+// Overload used internally by other geometry parsers (e.g. 'collectionFromWKTProj'), which
+// detect their 'CRSType' and pass it down to this function. Otherwise the CRS IRI would be lost.
+template <typename T, typename F>
+Point<T> pointFromWKTProj(const char* c, const char** endr, F projFunc, CRSType sourceCRS);
+
 template <typename T>
 Point<T> pointFromWKT(const char* c, const char** endr);
 
@@ -963,6 +986,11 @@ Point<T> pointFromWKTProj(std::string wkt, F&& projFunc);
 
 template <typename T, typename F>
 Polygon<T> polygonFromWKTProj(const char* c, const char** endr, F projFunc);
+
+// Overload used internally by other geometry parsers (e.g. 'multiPolygonFromWKTProj'), which
+// detect their 'CRSType' and pass it down to this function. Otherwise the CRS IRI would be lost.
+template <typename T, typename F>
+Polygon<T> polygonFromWKTProj(const char* c, const char** endr, F projFunc, CRSType sourceCRS);
 
 template <typename T>
 Polygon<T> polygonFromWKT(const char* c, const char** endr);
@@ -976,9 +1004,20 @@ Polygon<T> polygonFromWKTProj(std::string wkt, F projFunc);
 template <typename T, typename F>
 MultiLine<T> multiLineFromWKTProj(const char* c, const char** endr, F projFunc);
 
+// Overload used internally by other geometry parsers (e.g. 'multiPointFromWKTProj'), which
+// detect their 'CRSType' and pass it down to this function. Otherwise the CRS IRI would be lost.
+template <typename T, typename F>
+MultiLine<T> multiLineFromWKTProj(const char* c, const char** endr, F projFunc, CRSType sourceCRS);
+
 template <typename T, typename F>
 MultiPolygon<T> multiPolygonFromWKTProj(const char* c, const char** endr,
                                         F projFunc);
+
+// Overload used internally by other geometry parsers (e.g. 'collectionFromWKTProj'), which
+// detect their 'CRSType' and pass it down to this function. Otherwise the CRS IRI would be lost.
+template <typename T, typename F>
+MultiPolygon<T> multiPolygonFromWKTProj(const char* c, const char** endr,
+                                        F projFunc, CRSType sourceCRS);
 
 template <typename T>
 MultiPolygon<T> multiPolygonFromWKT(const char* c, const char** endr);
@@ -989,9 +1028,21 @@ WKTType getWKTType(const char* c);
 
 WKTType getWKTType(const std::string& str);
 
+CRSType getCRSType(const char* c, const char** endr);
+
+CRSType getCRSType(const char* c);
+
+CRSType getCRSType(const std::string& str);
+
 template <typename T, typename F>
 Collection<T> collectionFromWKTProj(const char* c, const char** endr,
                                     F&& projFunc);
+
+// Overload used internally by other geometry parsers (e.g. 'collectionFromWKT'), which
+// detect their 'CRSType' and pass it down to this function. Otherwise the CRS IRI would be lost.
+template <typename T, typename F>
+Collection<T> collectionFromWKTProj(const char* c, const char** endr,
+                                    F projFunc, CRSType sourceCRS);
 
 template <typename T>
 Collection<T> collectionFromWKT(const char* c, const char** endr);
@@ -1343,6 +1394,30 @@ Point<T> latLngToWebMerc(Point<T> lngLat);
 
 template <typename T>
 Point<T> webMercToLatLng(double x, double y);
+
+template <typename T>
+Point<T> webMercToLatLng(Point<T> webMerc);
+
+template <typename T>
+Point<T> swapCoords(double x, double y);
+
+template <typename T>
+Point<T> lngLatToLatLng(Point<T> lngLat);
+
+template <typename T>
+Point<T> latLngToLngLat(Point<T> latLng);
+
+template <typename T>
+Point<T> projectToCRS(const Point<T>& p, CRSType baseCrs, CRSType goalCrs);
+
+template <typename T>
+Point<T> projectToCRS84(const Point<T>& p, CRSType baseCrs);
+
+template <typename T>
+Point<T> projectToWGS84(const Point<T>& p, CRSType baseCrs);
+
+template <typename T>
+Point<T> projectToWebMerc(const Point<T>& p, CRSType baseCrs);
 
 template <typename T>
 double webMercMeterDist(const Point<T>& a, const Point<T>& b);

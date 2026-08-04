@@ -40,4 +40,5 @@ void GeoTest::run() {
   testGeometryBasics();
   testWktSerialize();
   testDist();
+  testCRS();
 }

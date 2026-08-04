@@ -38,6 +38,7 @@ class GeoTest {
     void testGeometryBasics();
     void testWktSerialize();
     void testDist();
+    void testCRS();
 };
 
 #endif

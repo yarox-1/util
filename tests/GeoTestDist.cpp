@@ -569,6 +569,12 @@ static void testDistOther() {
 
   TEST(util::geo::meterDist(line2, polyWithInner), ==, approx(4.5));
   TEST(util::geo::meterDist(polyWithInner, line2), ==, approx(4.5));
+
+  // Regression test for webMercMeterDist
+  auto webMercLineA = lineFromWKT<double>("LINESTRING(0 0, 10 0)");
+  auto webMercLineB = lineFromWKT<double>("LINESTRING(20 0, 30 0)");
+  TEST(util::geo::webMercMeterDist(webMercLineA, webMercLineB), ==, approx(10.0));
+  TEST(util::geo::webMercMeterDist(webMercLineB, webMercLineA), ==, approx(10.0));
 }
 
 // _____________________________________________________________________________

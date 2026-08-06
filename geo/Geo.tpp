@@ -6353,7 +6353,7 @@ double webMercMeterDist(const G1& a, const G2& b) {
   double fA = webMercDistFactor(pa);
   double fB = webMercDistFactor(pb);
 
-  return util::geo::dist(a, b) * cos((fA + fB) / 2.0);
+  return util::geo::dist(a, b) * (fA + fB) / 2.0;
 }
 
 // _____________________________________________________________________________

@@ -543,4 +543,20 @@ void GeoTest::testCRS() {
         "GEOMETRYCOLLECTION(MULTIPOINT(7 47,8 48),MULTIPOLYGON(((7 47,8 47,8 48,7 48,7 47)),"
         "((8 48,9 48,9 49,8 49,8 48))),MULTILINESTRING((7 47,8 47),(8 48,7 48)))");
   }
+
+  {
+    // Test correct reattaching of CRS IRIs.
+
+    auto projCRS84 = util::geo::pointFromWKT<double>(
+        "<http://www.opengis.net/def/crs/OGC/1.3/CRS84> POINT(2 3)");
+    TEST(getWKT(projCRS84, util::geo::CRSType::CRS84), ==, "POINT(2 3)");
+
+    auto projWGS84 = util::geo::pointFromWKT<double>(
+        "<http://www.opengis.net/def/crs/EPSG/0/4326> POINT(3 2)");
+    TEST(getWKT(projWGS84, util::geo::CRSType::WGS84), ==, "<http://www.opengis.net/def/crs/EPSG/0/4326> POINT(3 2)");
+
+    auto projWebMerc = util::geo::pointFromWKT<double>(
+        "<http://www.opengis.net/def/crs/EPSG/0/3857> POINT(222638.98158654 334111.17140195)");
+    TEST(getWKT(projWebMerc, util::geo::CRSType::WEB_MERCATOR), ==, "<http://www.opengis.net/def/crs/EPSG/0/3857> POINT(222638.98158654 334111.17140195)");
+  }
 }

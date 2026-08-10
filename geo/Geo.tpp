@@ -483,21 +483,23 @@ RotatedBox<T> shrink(const RotatedBox<T>& b, double d) {
 
 // _____________________________________________________________________________
 template <typename T>
-std::string getWKT(const Point<T>& p, uint16_t prec) {
+std::string getWKT(const Point<T>& p, uint16_t prec, CRSType sourceCRS) {
+  // Project from internal CRS84 to original 'sourceCRS'.
+  auto proj = projectToCRS(p, CRS84, sourceCRS);
   std::string ret;
-  ret = "POINT(";
+  ret = getCrsIri(sourceCRS) + "POINT(";
   ret.reserve(6 + prec + 3 + prec + 3 + 1);
-  ret.append(formatFloat(p.getX(), prec));
+  ret.append(formatFloat(proj.getX(), prec));
   ret.push_back(' ');
-  ret.append(formatFloat(p.getY(), prec));
+  ret.append(formatFloat(proj.getY(), prec));
   ret.push_back(')');
   return ret;
 }
 
 // _____________________________________________________________________________
 template <typename T>
-std::string getWKT(const Point<T>& p) {
-  return getWKT(p, 6);
+std::string getWKT(const Point<T>& p, CRSType sourceCRS) {
+  return getWKT(p, 6, sourceCRS);
 }
 
 // _____________________________________________________________________________

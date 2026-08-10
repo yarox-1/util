@@ -298,11 +298,14 @@ RotatedBox<T> shrink(const RotatedBox<T>& b, double d);
 
 bool doubleEq(double a, double b);
 
-template <typename T>
-std::string getWKT(const Point<T>& p, uint16_t prec);
+// This is used by 'getWKT' to attach the CRS IRI for a specified CRS.
+std::string getCrsIri(CRSType sourceCRS);
 
 template <typename T>
-std::string getWKT(const Point<T>& p);
+std::string getWKT(const Point<T>& p, uint16_t prec, CRSType sourceCRS = CRS84);
+
+template <typename T>
+std::string getWKT(const Point<T>& p, CRSType sourceCRS = CRS84);
 
 template <typename T>
 std::string getWKT(const std::vector<Point<T>>& p, uint16_t prec);

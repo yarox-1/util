@@ -128,6 +128,22 @@ util::geo::CRSType util::geo::getCRSType(const char* c, const char** endr) {
 }
 
 // _____________________________________________________________________________
+std::string util::geo::getCrsIri(util::geo::CRSType sourceCRS) {
+  switch (sourceCRS)
+  {
+  case CRS84:
+    // Not attaching IRI as CRS84 is the default.
+    return "";
+  case WGS84:
+    return "<http://www.opengis.net/def/crs/EPSG/0/4326> ";
+  case WEB_MERCATOR:
+    return "<http://www.opengis.net/def/crs/EPSG/0/3857> ";
+  default:
+    throw std::runtime_error("Trying to get CRS IRI for unsupported CRS type.");
+  }
+}
+
+// _____________________________________________________________________________
 double util::geo::distToSegment(double lax, double lay, double lbx, double lby,
                                 double px, double py) {
   double dx = lbx - lax;

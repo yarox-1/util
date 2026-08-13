@@ -547,6 +547,7 @@ void GeoTest::testCRS() {
   {
     // Test correct reattaching of CRS IRIs.
 
+    // POINT
     auto projCRS84 = util::geo::pointFromWKT<double>(
         "<http://www.opengis.net/def/crs/OGC/1.3/CRS84> POINT(2 3)");
     TEST(getWKT(projCRS84, util::geo::CRSType::CRS84), ==, "POINT(2 3)");
@@ -557,6 +558,123 @@ void GeoTest::testCRS() {
 
     auto projWebMerc = util::geo::pointFromWKT<double>(
         "<http://www.opengis.net/def/crs/EPSG/0/3857> POINT(222638.98158654 334111.17140195)");
-    TEST(getWKT(projWebMerc, util::geo::CRSType::WEB_MERCATOR), ==, "<http://www.opengis.net/def/crs/EPSG/0/3857> POINT(222638.98158654 334111.17140195)");
+    // The point will change a bit due to the reprojecting.
+    TEST(getWKT(projWebMerc, util::geo::CRSType::WEB_MERCATOR), ==, "<http://www.opengis.net/def/crs/EPSG/0/3857> POINT(222638.981587 334111.171402)");
+
+    // MULTIPOINT
+    auto projCRS84_2 = util::geo::multiPointFromWKT<double>(
+        "<http://www.opengis.net/def/crs/OGC/1.3/CRS84> MULTIPOINT((7 47), (8 48))");
+    TEST(getWKT(projCRS84_2, util::geo::CRSType::CRS84), ==, "MULTIPOINT(7 47,8 48)");
+
+    auto projWGS84_2 = util::geo::multiPointFromWKT<double>(
+        "<http://www.opengis.net/def/crs/EPSG/0/4326> MULTIPOINT((47 7), (48 8))");
+    TEST(getWKT(projWGS84_2, util::geo::CRSType::WGS84), ==, "<http://www.opengis.net/def/crs/EPSG/0/4326> MULTIPOINT(47 7,48 8)");
+
+    auto projWebMerc_2 = util::geo::multiPointFromWKT<double>(
+        "<http://www.opengis.net/def/crs/EPSG/0/3857> MULTIPOINT((779236.435552915 5942074.072431109),"
+        " (890555.9263461885 6106854.834885074))");
+    TEST(getWKT(projWebMerc_2, util::geo::CRSType::WEB_MERCATOR), ==,
+        "<http://www.opengis.net/def/crs/EPSG/0/3857> MULTIPOINT(779236.435553 5942074.072431,"
+        "890555.926346 6106854.834885)");
+
+    // Line 
+    auto projCRS84_3 = util::geo::lineFromWKT<double>(
+        "<http://www.opengis.net/def/crs/OGC/1.3/CRS84> LINESTRING(7 47, 7 48)");
+    TEST(getWKT(projCRS84_3, util::geo::CRSType::CRS84), ==, "LINESTRING(7 47,7 48)");
+
+    auto projWGS84_3 = util::geo::lineFromWKT<double>(
+        "<http://www.opengis.net/def/crs/EPSG/0/4326> LINESTRING(47 7, 48 7)");
+    TEST(getWKT(projWGS84_3, util::geo::CRSType::WGS84), ==, "<http://www.opengis.net/def/crs/EPSG/0/4326> LINESTRING(47 7,48 7)");
+    
+
+    auto projWebMerc_3 = util::geo::lineFromWKT<double>(
+        "<http://www.opengis.net/def/crs/EPSG/0/3857> LINESTRING(779236.435552915 "
+        "5942074.072431109, 779236.435552915 6106854.834885074)");
+    TEST(getWKT(projWebMerc_3, util::geo::CRSType::WEB_MERCATOR), ==,
+        "<http://www.opengis.net/def/crs/EPSG/0/3857> LINESTRING(779236.435553 "
+        "5942074.072431,779236.435553 6106854.834885)");
+
+    // MULTILINESTRING
+    auto projCRS8_4 = util::geo::multiLineFromWKT<double>(
+        "<http://www.opengis.net/def/crs/OGC/1.3/CRS84> MULTILINESTRING((7 47, 8 47), (8 48, 7 48))");
+    TEST(getWKT(projCRS8_4, util::geo::CRSType::CRS84), ==, "MULTILINESTRING((7 47,8 47),(8 48,7 48))");
+
+    auto projWGS8_4 = util::geo::multiLineFromWKT<double>(
+        "<http://www.opengis.net/def/crs/EPSG/0/4326> MULTILINESTRING((47 7, 47 8), (48 8, 48 7))");
+    TEST(getWKT(projWGS8_4, util::geo::CRSType::WGS84), ==, "<http://www.opengis.net/def/crs/EPSG/0/4326> MULTILINESTRING((47 7,47 8),(48 8,48 7))");
+
+    auto projWebMerc_4 = util::geo::multiLineFromWKT<double>(
+        "<http://www.opengis.net/def/crs/EPSG/0/3857> MULTILINESTRING((779236.435552915 5942074.072431109,"
+        " 890555.9263461885 5942074.072431109), (890555.9263461885 6106854.834885074, 779236.435552915 6106854.834885074))");
+    TEST(getWKT(projWebMerc_4, util::geo::CRSType::WEB_MERCATOR), ==,
+        "<http://www.opengis.net/def/crs/EPSG/0/3857> MULTILINESTRING((779236.435553 5942074.072431,"
+        "890555.926346 5942074.072431),(890555.926346 6106854.834885,779236.435553 6106854.834885))");
+
+    // POLYGON
+    auto projCRS84_5 = util::geo::polygonFromWKT<double>(
+        "<http://www.opengis.net/def/crs/OGC/1.3/CRS84> POLYGON((7 47, 8 47, 8 48, 7 48, 7 47))");
+    TEST(getWKT(projCRS84_5, util::geo::CRSType::CRS84), ==, "POLYGON((7 47,8 47,8 48,7 48,7 47))");
+
+    auto projWGS84_5 = util::geo::polygonFromWKT<double>(
+        "<http://www.opengis.net/def/crs/EPSG/0/4326> POLYGON((47 7, 47 8, 48 8, 48 7, 47 7))");
+    TEST(getWKT(projWGS84_5, util::geo::CRSType::WGS84), ==, "<http://www.opengis.net/def/crs/EPSG/0/4326> POLYGON((47 7,47 8,48 8,48 7,47 7))");
+
+    auto projWebMerc_5 = util::geo::polygonFromWKT<double>(
+        "<http://www.opengis.net/def/crs/EPSG/0/3857> POLYGON((779236.435552915 5942074.072431109,"
+        " 890555.9263461885 5942074.072431109, 890555.9263461885 6106854.834885074, 779236.435552915"
+        " 6106854.834885074, 779236.435552915 5942074.072431109))");
+    TEST(getWKT(projWebMerc_5, util::geo::CRSType::WEB_MERCATOR), ==,
+        "<http://www.opengis.net/def/crs/EPSG/0/3857> POLYGON((779236.435553 5942074.072431,"
+        "890555.926346 5942074.072431,890555.926346 6106854.834885,779236.435553"
+        " 6106854.834885,779236.435553 5942074.072431))");
+
+    // MULTIPOLYGON
+    auto projCRS84_6 = util::geo::multiPolygonFromWKT<double>(
+        "<http://www.opengis.net/def/crs/OGC/1.3/CRS84> MULTIPOLYGON(((7 47, 8 47, 8 48, 7 48, 7 47)),"
+        " ((8 48, 9 48, 9 49, 8 49, 8 48)))");
+    TEST(getWKT(projCRS84_6, util::geo::CRSType::CRS84), ==, "MULTIPOLYGON(((7 47,8 47,8 48,7 48,7 47)),((8 48,9 48,9 49,8 49,8 48)))");
+
+    auto projWGS84_6 = util::geo::multiPolygonFromWKT<double>(
+        "<http://www.opengis.net/def/crs/EPSG/0/4326> MULTIPOLYGON(((47 7, 47 8, 48 8, 48 7, 47 7)),"
+        " ((48 8, 48 9, 49 9, 49 8, 48 8)))");
+    TEST(getWKT(projWGS84_6, util::geo::CRSType::WGS84), ==,
+        "<http://www.opengis.net/def/crs/EPSG/0/4326> MULTIPOLYGON(((47 7,47 8,48 8,48 7,47 7)),"
+        "((48 8,48 9,49 9,49 8,48 8)))");
+
+    auto projWebMerc_6 = util::geo::multiPolygonFromWKT<double>(
+        "<http://www.opengis.net/def/crs/EPSG/0/3857> MULTIPOLYGON(((779236.435552915 5942074.072431109,"
+        " 890555.9263461885 5942074.072431109, 890555.9263461885 6106854.834885074, 779236.435552915 6106854.834885074,"
+        " 779236.435552915 5942074.072431109)), ((890555.9263461885 6106854.834885074, 1001875.4171394621 6106854.834885074,"
+        " 1001875.4171394621 6274861.394006576, 890555.9263461885 6274861.394006576, 890555.9263461885 6106854.834885074)))");
+    TEST(getWKT(projWebMerc_6, util::geo::CRSType::WEB_MERCATOR), ==,
+        "<http://www.opengis.net/def/crs/EPSG/0/3857> MULTIPOLYGON(((779236.435553 5942074.072431,"
+        "890555.926346 5942074.072431,890555.926346 6106854.834885,779236.435553 6106854.834885,"
+        "779236.435553 5942074.072431)),((890555.926346 6106854.834885,1001875.417139 6106854.834885,"
+        "1001875.417139 6274861.394007,890555.926346 6274861.394007,890555.926346 6106854.834885)))");
+
+    // COLLECTION
+    auto projCRS84_7 = util::geo::collectionFromWKT<double>(
+        "<http://www.opengis.net/def/crs/OGC/1.3/CRS84> GEOMETRYCOLLECTION(POINT(7 47),"
+        " LINESTRING(7 47, 8 48), POLYGON((7 47, 8 47, 8 48, 7 48, 7 47)))");
+    TEST(getWKT(projCRS84_7, util::geo::CRSType::CRS84), ==,
+        "GEOMETRYCOLLECTION(POINT(7 47),LINESTRING(7 47,8 48),POLYGON((7 47,8 47,8 48,7 48,7 47)))");
+
+    auto projWGS84_7 = util::geo::collectionFromWKT<double>(
+        "<http://www.opengis.net/def/crs/EPSG/0/4326> GEOMETRYCOLLECTION(POINT(47 7), "
+        "LINESTRING(47 7, 48 8), POLYGON((47 7, 47 8, 48 8, 48 7, 47 7)))");
+    TEST(getWKT(projWGS84_7, util::geo::CRSType::WGS84), ==,
+        "<http://www.opengis.net/def/crs/EPSG/0/4326> GEOMETRYCOLLECTION(POINT(47 7),"
+        "LINESTRING(47 7,48 8),POLYGON((47 7,47 8,48 8,48 7,47 7)))");
+
+    auto projWebMerc_7 = util::geo::collectionFromWKT<double>(
+        "<http://www.opengis.net/def/crs/EPSG/0/3857> GEOMETRYCOLLECTION(POINT(779236.435552915 5942074.072431109),"
+        " LINESTRING(779236.435552915 5942074.072431109, 890555.9263461885 6106854.834885074), POLYGON((779236.435552915"
+        " 5942074.072431109, 890555.9263461885 5942074.072431109, 890555.9263461885 6106854.834885074, 779236.435552915 "
+        "6106854.834885074, 779236.435552915 5942074.072431109)))");
+    TEST(getWKT(projWebMerc_7, util::geo::CRSType::WEB_MERCATOR), ==,
+        "<http://www.opengis.net/def/crs/EPSG/0/3857> GEOMETRYCOLLECTION(POINT(779236.435553 5942074.072431),"
+        "LINESTRING(779236.435553 5942074.072431,890555.926346 6106854.834885),POLYGON((779236.435553 5942074.072431,"
+        "890555.926346 5942074.072431,890555.926346 6106854.834885,779236.435553 6106854.834885,"
+        "779236.435553 5942074.072431)))");
   }
 }

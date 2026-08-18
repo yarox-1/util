@@ -163,6 +163,9 @@ enum CRSType : uint8_t {
   WEB_MERCATOR = 3,
 };
 
+constexpr const char* wgs84Iri = "<http://www.opengis.net/def/crs/EPSG/0/4326> ";
+constexpr const char*  webMercIri = "<http://www.opengis.net/def/crs/EPSG/0/3857> ";
+
 uint8_t boolArrToInt8(const std::array<bool, 8> arr);
 
 template <typename T>

@@ -135,9 +135,9 @@ std::string util::geo::getCrsIri(util::geo::CRSType sourceCRS) {
     // Not attaching IRI as CRS84 is the default.
     return "";
   case WGS84:
-    return "<http://www.opengis.net/def/crs/EPSG/0/4326> ";
+    return wgs84Iri;
   case WEB_MERCATOR:
-    return "<http://www.opengis.net/def/crs/EPSG/0/3857> ";
+    return webMercIri;
   default:
     throw std::runtime_error("Trying to get CRS IRI for unsupported CRS type.");
   }

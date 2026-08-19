@@ -302,34 +302,35 @@ RotatedBox<T> shrink(const RotatedBox<T>& b, double d);
 bool doubleEq(double a, double b);
 
 // This is used by 'getWKT' to attach the CRS IRI for a specified CRS.
-std::string getCrsIri(CRSType sourceCRS);
+std::string getCrsIri(CRSType targetCRS);
 
-// The 'getWKT' functions now attach the original CRS IRI (specified by 'sourceCRS').
-// By default or for 'sourceCRS == CRS84' no IRI will be attached.
+// The 'getWKT' functions now attach a given CRS IRI (specified by 'targetCRS').
+// By default or for 'targetCRS == CRS84' no IRI will be attached.
+// The point will also be projected from 'currentCRS' to the 'targetCRS'.
 // As the collection uses the 'getWKT' function of the subgeometries, the IRIs for these geometries are hidden (via 'hideIri'). 
 template <typename T>
-std::string getWKT(const Point<T>& p, uint16_t prec, CRSType sourceCRS = CRS84, bool hideIri = false);
+std::string getWKT(const Point<T>& p, uint16_t prec, CRSType currentCRS = CRS84, CRSType targetCRS = CRS84, bool hideIri = false);
 
 template <typename T>
-std::string getWKT(const Point<T>& p, CRSType sourceCRS = CRS84, bool hideIri = false);
+std::string getWKT(const Point<T>& p, CRSType currentCRS = CRS84, CRSType targetCRS = CRS84, bool hideIri = false);
 
 template <typename T>
-std::string getWKT(const std::vector<Point<T>>& p, uint16_t prec, CRSType sourceCRS = CRS84, bool hideIri = false);
+std::string getWKT(const std::vector<Point<T>>& p, uint16_t prec, CRSType currentCRS = CRS84, CRSType targetCRS = CRS84, bool hideIri = false);
 
 template <typename T>
-std::string getWKT(const std::vector<Point<T>>& p, CRSType sourceCRS = CRS84, bool hideIri = false);
+std::string getWKT(const std::vector<Point<T>>& p, CRSType currentCRS = CRS84, CRSType targetCRS = CRS84, bool hideIri = false);
 
 template <typename T>
-std::string getWKT(const Line<T>& l, uint16_t prec, CRSType sourceCRS = CRS84, bool hideIri = false);
+std::string getWKT(const Line<T>& l, uint16_t prec, CRSType currentCRS = CRS84, CRSType targetCRS = CRS84, bool hideIri = false);
 
 template <typename T>
-std::string getWKT(const Line<T>& l, CRSType sourceCRS = CRS84, bool hideIri = false);
+std::string getWKT(const Line<T>& l, CRSType currentCRS = CRS84, CRSType targetCRS = CRS84, bool hideIri = false);
 
 template <typename T>
-std::string getWKT(const std::vector<Line<T>>& ls, uint16_t prec, CRSType sourceCRS = CRS84, bool hideIri = false);
+std::string getWKT(const std::vector<Line<T>>& ls, uint16_t prec, CRSType currentCRS = CRS84, CRSType targetCRS = CRS84, bool hideIri = false);
 
 template <typename T>
-std::string getWKT(const std::vector<Line<T>>& ls, CRSType sourceCRS = CRS84, bool hideIri = false);
+std::string getWKT(const std::vector<Line<T>>& ls, CRSType currentCRS = CRS84, CRSType targetCRS = CRS84, bool hideIri = false);
 
 template <typename T>
 std::string getWKT(const XSortedPolygon<T>& ls, uint16_t prec);
@@ -350,22 +351,22 @@ template <typename T>
 std::string getWKT(const Box<T>& l);
 
 template <typename T>
-std::string getWKT(const Polygon<T>& p, uint16_t prec, CRSType sourceCRS = CRS84, bool hideIri = false);
+std::string getWKT(const Polygon<T>& p, uint16_t prec, CRSType currentCRS = CRS84, CRSType targetCRS = CRS84, bool hideIri = false);
 
 template <typename T>
-std::string getWKT(const Polygon<T>& p, CRSType sourceCRS = CRS84, bool hideIri = false);
+std::string getWKT(const Polygon<T>& p, CRSType currentCRS = CRS84, CRSType targetCRS = CRS84, bool hideIri = false);
 
 template <typename T>
-std::string getWKT(const std::vector<Polygon<T>>& ls, uint16_t prec, CRSType sourceCRS = CRS84, bool hideIri = false);
+std::string getWKT(const std::vector<Polygon<T>>& ls, uint16_t prec, CRSType currentCRS = CRS84, CRSType targetCRS = CRS84, bool hideIri = false);
 
 template <typename T>
-std::string getWKT(const std::vector<Polygon<T>>& ls, CRSType sourceCRS = CRS84, bool hideIri = false);
+std::string getWKT(const std::vector<Polygon<T>>& ls, CRSType currentCRS = CRS84, CRSType targetCRS = CRS84, bool hideIri = false);
 
 template <typename T>
-std::string getWKT(const Collection<T>& coll, uint16_t prec, CRSType sourceCRS = CRS84, bool hideIri = false);
+std::string getWKT(const Collection<T>& coll, uint16_t prec, CRSType currentCRS = CRS84, CRSType targetCRS = CRS84, bool hideIri = false);
 
 template <typename T>
-std::string getWKT(const Collection<T>& coll, CRSType sourceCRS = CRS84, bool hideIri = false);
+std::string getWKT(const Collection<T>& coll, CRSType currentCRS = CRS84, CRSType targetCRS = CRS84, bool hideIri = false);
 
 template <typename T>
 bool contains(const Point<T>& p, const Box<T>& box);

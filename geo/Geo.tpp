@@ -483,11 +483,11 @@ RotatedBox<T> shrink(const RotatedBox<T>& b, double d) {
 
 // _____________________________________________________________________________
 template <typename T>
-std::string getWKT(const Point<T>& p, uint16_t prec, CRSType sourceCRS, bool hideIri) {
+std::string getWKT(const Point<T>& p, uint16_t prec, CRSType currentCRS, CRSType targetCRS, bool hideIri) {
   // Project from internal CRS84 to original 'sourceCRS'.
-  auto proj = projectToCRS(p, CRS84, sourceCRS);
+  auto proj = projectToCRS(p, currentCRS, targetCRS);
   std::string ret;
-  ret = hideIri ? "POINT(" : getCrsIri(sourceCRS) + "POINT(";
+  ret = hideIri ? "POINT(" : getCrsIri(targetCRS) + "POINT(";
   ret.reserve(6 + prec + 3 + prec + 3 + 1);
   ret.append(formatFloat(proj.getX(), prec));
   ret.push_back(' ');
@@ -498,18 +498,18 @@ std::string getWKT(const Point<T>& p, uint16_t prec, CRSType sourceCRS, bool hid
 
 // _____________________________________________________________________________
 template <typename T>
-std::string getWKT(const Point<T>& p, CRSType sourceCRS, bool hideIri) {
-  return getWKT(p, 6, sourceCRS, hideIri);
+std::string getWKT(const Point<T>& p, CRSType currentCRS, CRSType targetCRS, bool hideIri) {
+  return getWKT(p, 6, currentCRS, targetCRS, hideIri);
 }
 
 // _____________________________________________________________________________
 template <typename T>
-std::string getWKT(const std::vector<Point<T>>& p, uint16_t prec, CRSType sourceCRS, bool hideIri) {
-  std::string ret = hideIri ? "MULTIPOINT(" : getCrsIri(sourceCRS) + "MULTIPOINT(";
+std::string getWKT(const std::vector<Point<T>>& p, uint16_t prec, CRSType currentCRS, CRSType targetCRS, bool hideIri) {
+  std::string ret = hideIri ? "MULTIPOINT(" : getCrsIri(targetCRS) + "MULTIPOINT(";
   ret.reserve(10 + 1 + p.size() * (prec + 3) * 2 + 1);
   for (size_t i = 0; i < p.size(); i++) {
     if (i) ret.push_back(',');
-    auto point = projectToCRS(p[i], CRS84, sourceCRS);
+    auto point = projectToCRS(p[i], currentCRS, targetCRS);
     ret.append(formatFloat(point.getX(), prec));
     ret.push_back(' ');
     ret.append(formatFloat(point.getY(), prec));
@@ -520,18 +520,18 @@ std::string getWKT(const std::vector<Point<T>>& p, uint16_t prec, CRSType source
 
 // _____________________________________________________________________________
 template <typename T>
-std::string getWKT(const std::vector<Point<T>>& p, CRSType sourceCRS, bool hideIri) {
-  return getWKT(p, 6, sourceCRS, hideIri);
+std::string getWKT(const std::vector<Point<T>>& p, CRSType currentCRS, CRSType targetCRS, bool hideIri) {
+  return getWKT(p, 6, currentCRS, targetCRS, hideIri);
 }
 
 // _____________________________________________________________________________
 template <typename T>
-std::string getWKT(const Line<T>& l, uint16_t prec, CRSType sourceCRS, bool hideIri) {
-  std::string ret = hideIri ? "LINESTRING(" : getCrsIri(sourceCRS) + "LINESTRING(";
+std::string getWKT(const Line<T>& l, uint16_t prec, CRSType currentCRS, CRSType targetCRS, bool hideIri) {
+  std::string ret = hideIri ? "LINESTRING(" : getCrsIri(targetCRS) + "LINESTRING(";
   ret.reserve(10 + 1 + l.size() * (prec + 3) * 2 + 1);
   for (size_t i = 0; i < l.size(); i++) {
     if (i) ret.push_back(',');
-    auto point = projectToCRS(l[i], CRS84, sourceCRS);
+    auto point = projectToCRS(l[i], currentCRS, targetCRS);
     ret.append(formatFloat(point.getX(), prec));
     ret.push_back(' ');
     ret.append(formatFloat(point.getY(), prec));
@@ -542,14 +542,14 @@ std::string getWKT(const Line<T>& l, uint16_t prec, CRSType sourceCRS, bool hide
 
 // _____________________________________________________________________________
 template <typename T>
-std::string getWKT(const Line<T>& l, CRSType sourceCRS, bool hideIri) {
-  return getWKT(l, 6, sourceCRS, hideIri);
+std::string getWKT(const Line<T>& l, CRSType currentCRS, CRSType targetCRS, bool hideIri) {
+  return getWKT(l, 6, currentCRS, targetCRS, hideIri);
 }
 
 // _____________________________________________________________________________
 template <typename T>
-std::string getWKT(const std::vector<Line<T>>& ls, uint16_t prec, CRSType sourceCRS, bool hideIri) {
-  std::string ret = hideIri ? "MULTILINESTRING(" : getCrsIri(sourceCRS) + "MULTILINESTRING(";
+std::string getWKT(const std::vector<Line<T>>& ls, uint16_t prec, CRSType currentCRS, CRSType targetCRS, bool hideIri) {
+  std::string ret = hideIri ? "MULTILINESTRING(" : getCrsIri(targetCRS) + "MULTILINESTRING(";
 
   if (ls.size()) ret.reserve(15 + 2 + ls[0].size() * (prec + 3) * 2 + 2);
 
@@ -558,7 +558,7 @@ std::string getWKT(const std::vector<Line<T>>& ls, uint16_t prec, CRSType source
     ret.push_back('(');
     for (size_t i = 0; i < ls[j].size(); i++) {
       if (i) ret.push_back(',');
-      auto point = projectToCRS(ls[j][i], CRS84, sourceCRS);
+      auto point = projectToCRS(ls[j][i], currentCRS, targetCRS);
       ret.append(formatFloat(point.getX(), prec));
       ret.push_back(' ');
       ret.append(formatFloat(point.getY(), prec));
@@ -572,8 +572,8 @@ std::string getWKT(const std::vector<Line<T>>& ls, uint16_t prec, CRSType source
 
 // _____________________________________________________________________________
 template <typename T>
-std::string getWKT(const std::vector<Line<T>>& ls, CRSType sourceCRS, bool hideIri) {
-  return getWKT(ls, 6, sourceCRS, hideIri);
+std::string getWKT(const std::vector<Line<T>>& ls, CRSType currentCRS, CRSType targetCRS, bool hideIri) {
+  return getWKT(ls, 6, currentCRS, targetCRS, hideIri);
 }
 
 // _____________________________________________________________________________
@@ -659,14 +659,14 @@ std::string getWKT(const Box<T>& l) {
 
 // _____________________________________________________________________________
 template <typename T>
-std::string getWKT(const Polygon<T>& p, uint16_t prec, CRSType sourceCRS, bool hideIri) {
+std::string getWKT(const Polygon<T>& p, uint16_t prec, CRSType currentCRS, CRSType targetCRS, bool hideIri) {
   if (p.getOuter().size() == 0) return "POLYGON()";
-  std::string ret = hideIri ? "POLYGON((" : getCrsIri(sourceCRS) + "POLYGON((";
+  std::string ret = hideIri ? "POLYGON((" : getCrsIri(targetCRS) + "POLYGON((";
   ret.reserve(7 + 2 + p.getOuter().size() * (prec + 3) * 2 + 2);
 
   for (size_t i = 0; i < p.getOuter().size(); i++) {
     if (i > 0) ret.push_back(',');
-    auto point = projectToCRS(p.getOuter()[i], CRS84, sourceCRS);
+    auto point = projectToCRS(p.getOuter()[i], currentCRS, targetCRS);
     ret.append(formatFloat(point.getX(), prec));
     ret.push_back(' ');
     ret.append(formatFloat(point.getY(), prec));
@@ -674,7 +674,7 @@ std::string getWKT(const Polygon<T>& p, uint16_t prec, CRSType sourceCRS, bool h
 
   if (p.getOuter().front() != p.getOuter().back()) {
     ret.push_back(',');
-    auto point = projectToCRS(p.getOuter().front(), CRS84, sourceCRS);
+    auto point = projectToCRS(p.getOuter().front(), currentCRS, targetCRS);
     ret.append(formatFloat(point.getX(), prec));
     ret.push_back(' ');
     ret.append(formatFloat(point.getY(), prec));
@@ -685,7 +685,7 @@ std::string getWKT(const Polygon<T>& p, uint16_t prec, CRSType sourceCRS, bool h
     ret.append(",(");
     for (size_t i = 0; i < inner.size(); i++) {
       if (i > 0) ret.push_back(',');
-      auto point = projectToCRS(inner[i], CRS84, sourceCRS);
+      auto point = projectToCRS(inner[i], currentCRS, targetCRS);
       ret.append(formatFloat(point.getX(), prec));
       ret.push_back(' ');
       ret.append(formatFloat(point.getY(), prec));
@@ -693,7 +693,7 @@ std::string getWKT(const Polygon<T>& p, uint16_t prec, CRSType sourceCRS, bool h
 
     if (inner.front() != inner.back()) {
       ret.push_back(',');
-      auto point = projectToCRS(inner.front(), CRS84, sourceCRS);
+      auto point = projectToCRS(inner.front(), currentCRS, targetCRS);
       ret.append(formatFloat(point.getX(), prec));
       ret.push_back(' ');
       ret.append(formatFloat(point.getY(), prec));
@@ -706,14 +706,14 @@ std::string getWKT(const Polygon<T>& p, uint16_t prec, CRSType sourceCRS, bool h
 
 // _____________________________________________________________________________
 template <typename T>
-std::string getWKT(const Polygon<T>& p, CRSType sourceCRS, bool hideIri) {
-  return getWKT(p, 6, sourceCRS, hideIri);
+std::string getWKT(const Polygon<T>& p, CRSType currentCRS, CRSType targetCRS, bool hideIri) {
+  return getWKT(p, 6, currentCRS, targetCRS, hideIri);
 }
 
 // _____________________________________________________________________________
 template <typename T>
-std::string getWKT(const std::vector<Polygon<T>>& ls, uint16_t prec, CRSType sourceCRS, bool hideIri) {
-  std::string ret = hideIri ? "MULTIPOLYGON(" : getCrsIri(sourceCRS) + "MULTIPOLYGON(";
+std::string getWKT(const std::vector<Polygon<T>>& ls, uint16_t prec, CRSType currentCRS, CRSType targetCRS, bool hideIri) {
+  std::string ret = hideIri ? "MULTIPOLYGON(" : getCrsIri(targetCRS) + "MULTIPOLYGON(";
   if (ls.size())
     ret.reserve(12 + 2 + ls[0].getOuter().size() * (prec + 3) * 2 + 2);
 
@@ -723,7 +723,7 @@ std::string getWKT(const std::vector<Polygon<T>>& ls, uint16_t prec, CRSType sou
     ret.push_back('(');
     for (size_t i = 0; i < ls[j].getOuter().size(); i++) {
       if (i > 0) ret.push_back(',');
-      auto point = projectToCRS(ls[j].getOuter()[i], CRS84, sourceCRS);
+      auto point = projectToCRS(ls[j].getOuter()[i], currentCRS, targetCRS);
       ret.append(formatFloat(point.getX(), prec));
       ret.push_back(' ');
       ret.append(formatFloat(point.getY(), prec));
@@ -731,7 +731,7 @@ std::string getWKT(const std::vector<Polygon<T>>& ls, uint16_t prec, CRSType sou
 
     if (ls[j].getOuter().front() != ls[j].getOuter().back()) {
       ret.push_back(',');
-      auto point = projectToCRS(ls[j].getOuter().front(), CRS84, sourceCRS);
+      auto point = projectToCRS(ls[j].getOuter().front(), currentCRS, targetCRS);
       ret.append(formatFloat(point.getX(), prec));
       ret.push_back(' ');
       ret.append(formatFloat(point.getY(), prec));
@@ -743,14 +743,14 @@ std::string getWKT(const std::vector<Polygon<T>>& ls, uint16_t prec, CRSType sou
       ret.push_back('(');
       for (size_t i = 0; i < inner.size(); i++) {
         if (i > 0) ret.push_back(',');
-        auto point = projectToCRS(inner[i], CRS84, sourceCRS);
+        auto point = projectToCRS(inner[i], currentCRS, targetCRS);
         ret.append(formatFloat(point.getX(), prec));
         ret.push_back(' ');
         ret.append(formatFloat(point.getY(), prec));
       }
       if (inner.front() != inner.back()) {
         ret.push_back(',');
-        auto point = projectToCRS(inner.front(), CRS84, sourceCRS);
+        auto point = projectToCRS(inner.front(), currentCRS, targetCRS);
         ret.append(formatFloat(point.getX(), prec));
         ret.push_back(' ');
         ret.append(formatFloat(point.getY(), prec));
@@ -766,27 +766,27 @@ std::string getWKT(const std::vector<Polygon<T>>& ls, uint16_t prec, CRSType sou
 
 // _____________________________________________________________________________
 template <typename T>
-std::string getWKT(const std::vector<Polygon<T>>& ls, CRSType sourceCRS, bool hideIri) {
-  return getWKT(ls, 6, sourceCRS, hideIri);
+std::string getWKT(const std::vector<Polygon<T>>& ls, CRSType currentCRS, CRSType targetCRS, bool hideIri) {
+  return getWKT(ls, 6, currentCRS, targetCRS, hideIri);
 }
 
 // _____________________________________________________________________________
 template <typename T>
-std::string getWKT(const Collection<T>& coll, uint16_t prec, CRSType sourceCRS, bool hideIri) {
-  std::string ret = hideIri ? "GEOMETRYCOLLECTION(" : getCrsIri(sourceCRS) + "GEOMETRYCOLLECTION(";
+std::string getWKT(const Collection<T>& coll, uint16_t prec, CRSType currentCRS, CRSType targetCRS, bool hideIri) {
+  std::string ret = hideIri ? "GEOMETRYCOLLECTION(" : getCrsIri(targetCRS) + "GEOMETRYCOLLECTION(";
 
   std::string delim = "";
 
   for (const auto& g : coll) {
     ret += delim;
     delim = ",";
-    if (g.getType() == 0) ret += util::geo::getWKT(g.getPoint(), prec, sourceCRS, true);
-    if (g.getType() == 1) ret += util::geo::getWKT(g.getLine(), prec, sourceCRS, true);
-    if (g.getType() == 2) ret += util::geo::getWKT(g.getPolygon(), prec, sourceCRS, true);
-    if (g.getType() == 3) ret += util::geo::getWKT(g.getMultiLine(), prec, sourceCRS, true);
-    if (g.getType() == 4) ret += util::geo::getWKT(g.getMultiPolygon(), prec, sourceCRS, true);
-    if (g.getType() == 5) ret += util::geo::getWKT(g.getCollection(), prec, sourceCRS, true);
-    if (g.getType() == 6) ret += util::geo::getWKT(g.getMultiPoint(), prec, sourceCRS, true);
+    if (g.getType() == 0) ret += util::geo::getWKT(g.getPoint(), prec, currentCRS, targetCRS, true);
+    if (g.getType() == 1) ret += util::geo::getWKT(g.getLine(), prec, currentCRS, targetCRS, true);
+    if (g.getType() == 2) ret += util::geo::getWKT(g.getPolygon(), prec, currentCRS, targetCRS, true);
+    if (g.getType() == 3) ret += util::geo::getWKT(g.getMultiLine(), prec, currentCRS, targetCRS, true);
+    if (g.getType() == 4) ret += util::geo::getWKT(g.getMultiPolygon(), prec, currentCRS, targetCRS, true);
+    if (g.getType() == 5) ret += util::geo::getWKT(g.getCollection(), prec, currentCRS, targetCRS, true);
+    if (g.getType() == 6) ret += util::geo::getWKT(g.getMultiPoint(), prec, currentCRS, targetCRS, true);
   }
 
   return ret + ")";
@@ -794,8 +794,8 @@ std::string getWKT(const Collection<T>& coll, uint16_t prec, CRSType sourceCRS, 
 
 // _____________________________________________________________________________
 template <typename T>
-std::string getWKT(const Collection<T>& coll, CRSType sourceCRS, bool hideIri) {
-  return getWKT(coll, 6, sourceCRS, hideIri);
+std::string getWKT(const Collection<T>& coll, CRSType currentCRS, CRSType targetCRS, bool hideIri) {
+  return getWKT(coll, 6, currentCRS, targetCRS, hideIri);
 }
 
 // _____________________________________________________________________________

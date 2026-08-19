@@ -128,8 +128,8 @@ util::geo::CRSType util::geo::getCRSType(const char* c, const char** endr) {
 }
 
 // _____________________________________________________________________________
-std::string util::geo::getCrsIri(util::geo::CRSType sourceCRS) {
-  switch (sourceCRS)
+std::string util::geo::getCrsIri(util::geo::CRSType targetCRS) {
+  switch (targetCRS)
   {
   case CRS84:
     // Not attaching IRI as CRS84 is the default.

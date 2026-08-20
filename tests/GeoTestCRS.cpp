@@ -691,15 +691,6 @@ void GeoTest::testCRS() {
         " 6106854.834885,779236.435553 5942074.072431))");
 
     // POLYGON (from WGS84)
-    /* TODO<yarox-1> original test not working
-    util::geo::DPolygon polyWGS84{util::geo::DLine{util::geo::DPoint{47, 7}, util::geo::DPoint{47, 8},
-                        util::geo::DPoint{48, 8}, util::geo::DPoint{48, 7}, util::geo::DPoint{47, 7}}};
-    TEST(getWKT(polyWGS84, util::geo::CRSType::WGS84, util::geo::CRSType::CRS84), ==, "POLYGON((7 47,8 47,8 48,7 48,7 47))");
-    TEST(getWKT(polyWGS84, util::geo::CRSType::WGS84, util::geo::CRSType::WGS84), ==, "<http://www.opengis.net/def/crs/EPSG/0/4326> POLYGON((47 7,47 8,48 8,48 7,47 7))");
-    TEST(getWKT(polyWGS84, util::geo::CRSType::WGS84, util::geo::CRSType::WEB_MERCATOR), ==,
-        "<http://www.opengis.net/def/crs/EPSG/0/3857> POLYGON((779236.435553 5942074.072431,"
-        "890555.926346 5942074.072431,890555.926346 6106854.834885,779236.435553"
-        " 6106854.834885,779236.435553 5942074.072431))");*/
     util::geo::DPolygon polyWGS84{util::geo::DLine{util::geo::DPoint{48, 7}, util::geo::DPoint{48, 8},
                         util::geo::DPoint{47, 8}, util::geo::DPoint{47, 7}, util::geo::DPoint{48, 7}}};
     TEST(getWKT(polyWGS84, util::geo::CRSType::WGS84, util::geo::CRSType::CRS84), ==, "POLYGON((7 48,8 48,8 47,7 47,7 48))");
@@ -743,21 +734,6 @@ void GeoTest::testCRS() {
         "1001875.417139 6274861.394007,890555.926346 6274861.394007,890555.926346 6106854.834885)))");
 
     // MULTIPOLYGON (from WGS84)
-    /* TODO<yarox-1> original test fails
-    util::geo::DMultiPolygon mpolyWGS84{util::geo::DPolygon{util::geo::DLine{util::geo::DPoint{47, 7}, util::geo::DPoint{47, 8},
-                                        util::geo::DPoint{48, 8}, util::geo::DPoint{48, 7}, util::geo::DPoint{47, 7}}},
-                                        util::geo::DPolygon{util::geo::DLine{util::geo::DPoint{48, 8}, util::geo::DPoint{48, 9},
-                                        util::geo::DPoint{49, 9}, util::geo::DPoint{49, 8}, util::geo::DPoint{48, 8}}}};
-    TEST(getWKT(mpolyWGS84, util::geo::CRSType::WGS84, util::geo::CRSType::CRS84), ==, "MULTIPOLYGON(((7 47,8 47,8 48,7 48,7 47)),((8 48,9 48,9 49,8 49,8 48)))");
-    TEST(getWKT(mpolyWGS84, util::geo::CRSType::WGS84, util::geo::CRSType::WGS84), ==,
-        "<http://www.opengis.net/def/crs/EPSG/0/4326> MULTIPOLYGON(((47 7,47 8,48 8,48 7,47 7)),"
-        "((48 8,48 9,49 9,49 8,48 8)))");
-    TEST(getWKT(mpolyWGS84, util::geo::CRSType::WGS84, util::geo::CRSType::WEB_MERCATOR), ==,
-        "<http://www.opengis.net/def/crs/EPSG/0/3857> MULTIPOLYGON(((779236.435553 5942074.072431,"
-        "890555.926346 5942074.072431,890555.926346 6106854.834885,779236.435553 6106854.834885,"
-        "779236.435553 5942074.072431)),((890555.926346 6106854.834885,1001875.417139 6106854.834885,"
-        "1001875.417139 6274861.394007,890555.926346 6274861.394007,890555.926346 6106854.834885)))");
-    */
     util::geo::DMultiPolygon mpolyWGS84{util::geo::DPolygon{util::geo::DLine{util::geo::DPoint{48, 7}, util::geo::DPoint{48, 8},
                                         util::geo::DPoint{47, 8}, util::geo::DPoint{47, 7}, util::geo::DPoint{48, 7}}},
                                         util::geo::DPolygon{util::geo::DLine{util::geo::DPoint{49, 8}, util::geo::DPoint{49, 9},
@@ -811,21 +787,6 @@ void GeoTest::testCRS() {
         "779236.435553 5942074.072431)))");
 
     // COLLECTION (from WGS84)
-    /* TODO<yarox-1>
-    util::geo::DCollection colWGS84{util::geo::DPoint{47, 7}, util::geo::DLine{util::geo::DPoint{47, 7}, util::geo::DPoint{48, 8}},
-                                    util::geo::DPolygon{util::geo::DLine{util::geo::DPoint{47, 7}, util::geo::DPoint{47, 8},
-                                    util::geo::DPoint{48, 8}, util::geo::DPoint{48, 7}, util::geo::DPoint{47, 7}}}};
-    TEST(getWKT(colWGS84, util::geo::CRSType::WGS84, util::geo::CRSType::CRS84), ==,
-        "GEOMETRYCOLLECTION(POINT(7 47),LINESTRING(7 47,8 48),POLYGON((7 47,8 47,8 48,7 48,7 47)))");
-    TEST(getWKT(colWGS84, util::geo::CRSType::WGS84, util::geo::CRSType::WGS84), ==,
-        "<http://www.opengis.net/def/crs/EPSG/0/4326> GEOMETRYCOLLECTION(POINT(47 7),"
-        "LINESTRING(47 7,48 8),POLYGON((47 7,47 8,48 8,48 7,47 7)))");
-    TEST(getWKT(colWGS84, util::geo::CRSType::WGS84, util::geo::CRSType::WEB_MERCATOR), ==,
-        "<http://www.opengis.net/def/crs/EPSG/0/3857> GEOMETRYCOLLECTION(POINT(779236.435553 5942074.072431),"
-        "LINESTRING(779236.435553 5942074.072431,890555.926346 6106854.834885),POLYGON((779236.435553 5942074.072431,"
-        "890555.926346 5942074.072431,890555.926346 6106854.834885,779236.435553 6106854.834885,"
-        "779236.435553 5942074.072431)))");
-    */
     util::geo::DCollection colWGS84{util::geo::DPoint{47, 7}, util::geo::DLine{util::geo::DPoint{47, 7}, util::geo::DPoint{48, 8}},
                                     util::geo::DPolygon{util::geo::DLine{util::geo::DPoint{48, 7}, util::geo::DPoint{48, 8},
                                     util::geo::DPoint{47, 8}, util::geo::DPoint{47, 7}, util::geo::DPoint{48, 7}}}};

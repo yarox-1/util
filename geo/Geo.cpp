@@ -110,15 +110,15 @@ util::geo::CRSType util::geo::getCRSType(const char* c, const char** endr) {
     return CRS84;  // Default.
   }
 
-  if (strncicmp("<http://www.opengis.net/def/crs/OGC/1.3/CRS84>", c, 46) == 0) {
+  if (strncicmp(crs84Iri, c, 46) == 0) {
     if (endr) (*endr) = c + 46;
     return CRS84;
   }
-  if (strncicmp("<http://www.opengis.net/def/crs/EPSG/0/4326>", c, 44) == 0) {
+  if (strncicmp(wgs84Iri, c, 44) == 0) {
     if (endr) (*endr) = c + 44;
     return WGS84;
   }
-  if (strncicmp("<http://www.opengis.net/def/crs/EPSG/0/3857>", c, 44) == 0) {
+  if (strncicmp(webMercIri, c, 44) == 0) {
     if (endr) (*endr) = c + 44;
     return WEB_MERCATOR;
   }
@@ -135,9 +135,9 @@ std::string util::geo::getCrsIri(util::geo::CRSType targetCRS) {
     // Not attaching IRI as CRS84 is the default.
     return "";
   case WGS84:
-    return wgs84Iri;
+    return std::string{wgs84Iri} + " ";
   case WEB_MERCATOR:
-    return webMercIri;
+    return std::string{webMercIri} + " ";
   default:
     throw std::runtime_error("Trying to get CRS IRI for unsupported CRS type.");
   }

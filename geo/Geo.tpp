@@ -484,7 +484,6 @@ RotatedBox<T> shrink(const RotatedBox<T>& b, double d) {
 // _____________________________________________________________________________
 template <typename T>
 std::string getWKT(const Point<T>& p, uint16_t prec, CRSType currentCRS, CRSType targetCRS, bool hideIri) {
-  // Project from internal CRS84 to original 'sourceCRS'.
   auto proj = projectToCRS(p, currentCRS, targetCRS);
   std::string ret;
   ret = hideIri ? "POINT(" : getCrsIri(targetCRS) + "POINT(";

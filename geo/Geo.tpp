@@ -663,9 +663,11 @@ std::string getWKT(const Polygon<T>& p, uint16_t prec, CRSType currentCRS, CRSTy
   std::string ret = hideIri ? "POLYGON((" : getCrsIri(targetCRS) + "POLYGON((";
   ret.reserve(7 + 2 + p.getOuter().size() * (prec + 3) * 2 + 2);
 
+  util::geo::Point<T> front;
   for (size_t i = 0; i < p.getOuter().size(); i++) {
     if (i > 0) ret.push_back(',');
     auto point = projectToCRS(p.getOuter()[i], currentCRS, targetCRS);
+    if (i == 0) front = point;
     ret.append(formatFloat(point.getX(), prec));
     ret.push_back(' ');
     ret.append(formatFloat(point.getY(), prec));
@@ -673,10 +675,9 @@ std::string getWKT(const Polygon<T>& p, uint16_t prec, CRSType currentCRS, CRSTy
 
   if (p.getOuter().front() != p.getOuter().back()) {
     ret.push_back(',');
-    auto point = projectToCRS(p.getOuter().front(), currentCRS, targetCRS);
-    ret.append(formatFloat(point.getX(), prec));
+    ret.append(formatFloat(front.getX(), prec));
     ret.push_back(' ');
-    ret.append(formatFloat(point.getY(), prec));
+    ret.append(formatFloat(front.getY(), prec));
   }
   ret.push_back(')');
 
@@ -685,6 +686,7 @@ std::string getWKT(const Polygon<T>& p, uint16_t prec, CRSType currentCRS, CRSTy
     for (size_t i = 0; i < inner.size(); i++) {
       if (i > 0) ret.push_back(',');
       auto point = projectToCRS(inner[i], currentCRS, targetCRS);
+      if (i == 0) front = point;
       ret.append(formatFloat(point.getX(), prec));
       ret.push_back(' ');
       ret.append(formatFloat(point.getY(), prec));
@@ -692,10 +694,9 @@ std::string getWKT(const Polygon<T>& p, uint16_t prec, CRSType currentCRS, CRSTy
 
     if (inner.front() != inner.back()) {
       ret.push_back(',');
-      auto point = projectToCRS(inner.front(), currentCRS, targetCRS);
-      ret.append(formatFloat(point.getX(), prec));
+      ret.append(formatFloat(front.getX(), prec));
       ret.push_back(' ');
-      ret.append(formatFloat(point.getY(), prec));
+      ret.append(formatFloat(front.getY(), prec));
     }
     ret.push_back(')');
   }
@@ -720,9 +721,12 @@ std::string getWKT(const std::vector<Polygon<T>>& ls, uint16_t prec, CRSType cur
     if (j) ret.push_back(',');
     ret.push_back('(');
     ret.push_back('(');
+
+    util::geo::Point<T> front;
     for (size_t i = 0; i < ls[j].getOuter().size(); i++) {
       if (i > 0) ret.push_back(',');
       auto point = projectToCRS(ls[j].getOuter()[i], currentCRS, targetCRS);
+      if (i == 0) front = point;
       ret.append(formatFloat(point.getX(), prec));
       ret.push_back(' ');
       ret.append(formatFloat(point.getY(), prec));
@@ -730,10 +734,9 @@ std::string getWKT(const std::vector<Polygon<T>>& ls, uint16_t prec, CRSType cur
 
     if (ls[j].getOuter().front() != ls[j].getOuter().back()) {
       ret.push_back(',');
-      auto point = projectToCRS(ls[j].getOuter().front(), currentCRS, targetCRS);
-      ret.append(formatFloat(point.getX(), prec));
+      ret.append(formatFloat(front.getX(), prec));
       ret.push_back(' ');
-      ret.append(formatFloat(point.getY(), prec));
+      ret.append(formatFloat(front.getY(), prec));
     }
     ret.push_back(')');
 
@@ -743,16 +746,16 @@ std::string getWKT(const std::vector<Polygon<T>>& ls, uint16_t prec, CRSType cur
       for (size_t i = 0; i < inner.size(); i++) {
         if (i > 0) ret.push_back(',');
         auto point = projectToCRS(inner[i], currentCRS, targetCRS);
+        if (i == 0) front = point;
         ret.append(formatFloat(point.getX(), prec));
         ret.push_back(' ');
         ret.append(formatFloat(point.getY(), prec));
       }
       if (inner.front() != inner.back()) {
         ret.push_back(',');
-        auto point = projectToCRS(inner.front(), currentCRS, targetCRS);
-        ret.append(formatFloat(point.getX(), prec));
+        ret.append(formatFloat(front.getX(), prec));
         ret.push_back(' ');
-        ret.append(formatFloat(point.getY(), prec));
+        ret.append(formatFloat(front.getY(), prec));
       }
       ret.push_back(')');
     }

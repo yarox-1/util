@@ -110,16 +110,16 @@ util::geo::CRSType util::geo::getCRSType(const char* c, const char** endr) {
     return CRS84;  // Default.
   }
 
-  if (strncicmp(crs84Iri, c, 46) == 0) {
-    if (endr) (*endr) = c + 46;
+  if (strncicmp(crs84Iri, c, crs84IriLen) == 0) {
+    if (endr) (*endr) = c + crs84IriLen;
     return CRS84;
   }
-  if (strncicmp(wgs84Iri, c, 44) == 0) {
-    if (endr) (*endr) = c + 44;
+  if (strncicmp(wgs84Iri, c, wgs84IriLen) == 0) {
+    if (endr) (*endr) = c + wgs84IriLen;
     return WGS84;
   }
-  if (strncicmp(webMercIri, c, 44) == 0) {
-    if (endr) (*endr) = c + 44;
+  if (strncicmp(webMercIri, c, webMercIriLen) == 0) {
+    if (endr) (*endr) = c + webMercIriLen;
     return WEB_MERCATOR;
   }
 
